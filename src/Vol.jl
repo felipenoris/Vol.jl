@@ -1,6 +1,6 @@
 
 module Vol
 
-println("empty Vol module")
+include("ewma.jl")
 
 end
