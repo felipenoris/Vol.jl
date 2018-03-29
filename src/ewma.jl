@@ -1,6 +1,6 @@
 
 """
-    ewma(series, λ) -> Float64
+    ewma_canonical(series, λ) -> Float64
 
 Canonical definition of Exponentially Weighted Moving Average.
 """
@@ -19,7 +19,10 @@ function ewma_canonical(series::Vector{Float64}, λ::Float64) :: Float64
 end
 
 """
-Same as ewma_canonical, but squares returns and returns sqrt of the result.
+    ewma(returns, λ) -> Float64
+
+Same as `ewma_canonical`, but squares returns and returns sqrt of the result.
+Use this function to estimate the volatility of a return series with the EWMA model.
 """
 function ewma(returns::Vector{Float64}, λ::Float64) :: Float64
     n = length(returns)
