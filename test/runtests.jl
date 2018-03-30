@@ -14,6 +14,7 @@ r = [ 1. 2. 3.;
       10. 20. 30.]
 
 @test issymmetric(Vol.ewma(r, lambda))
+@test issymmetric(Vol.ewma_cov(r, lambda))
 
 # the diagonal of the correlation matrix should be ones.
 @test isapprox(diag(Vol.ewma(r, lambda)), ones(3))
@@ -83,7 +84,12 @@ end
 @test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
 
 # market prices
+lambda = 0.94
 (raw_data, table_header) = readcsv("prices.csv", header=true)
 prices = raw_data[:, 4:end]
 returns = Vol.log_returns(prices)
-corrmatrix = Vol.ewma(returns, 0.94)
+covmatrix = Vol.ewma_cov(returns, lambda)
+corrmatrix = Vol.ewma(returns, lambda)
+
+@test issymmetric(covmatrix)
+@test issymmetric(corrmatrix)
