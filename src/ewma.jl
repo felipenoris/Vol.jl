@@ -15,6 +15,7 @@ function ewma_canonical(series::Array{Float64,1}, λ::Float64) :: Float64
         sumprod += series[i] * weight
         sumweights += weight
     end
+
     return sumprod / sumweights
 end
 
