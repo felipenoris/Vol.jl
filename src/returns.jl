@@ -1,5 +1,5 @@
 
-function discrete_returns(series::Array{Float64, 1})
+function discrete_returns(series::Array{Float64, 1}) :: Array{Float64, 1}
 	n = length(series)
 	r = zeros(n-1)
 	for i in 2:n
@@ -8,7 +8,7 @@ function discrete_returns(series::Array{Float64, 1})
 	return r
 end
 
-function discrete_returns(series::Array{Float64, 2})
+function discrete_returns(series::Array{Float64, 2}) :: Array{Float64, 2}
 	(n, num_series) = size(series)
 	r = zeros(n-1, num_series)
 	for c in 1:num_series
@@ -19,7 +19,7 @@ function discrete_returns(series::Array{Float64, 2})
 	return r
 end
 
-function log_returns(series::Array{Float64, 1})
+function log_returns(series::Array{Float64, 1}) :: Array{Float64, 1}
 	n = length(series)
 	r = zeros(n-1)
 	for i in 2:n
@@ -28,7 +28,7 @@ function log_returns(series::Array{Float64, 1})
 	return r
 end
 
-function log_returns(series::Array{Float64, 2})
+function log_returns(series::Array{Float64, 2}) :: Array{Float64, 2}
 	(n, num_series) = size(series)
 	r = zeros(n-1, num_series)
 	for c in 1:num_series
