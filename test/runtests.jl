@@ -82,8 +82,8 @@ end
 # Diagonal of the covmatrix should be squared volatilities
 @test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
 
+# market prices
 (raw_data, table_header) = readcsv("prices.csv", header=true)
 prices = raw_data[:, 4:end]
-
 returns = Vol.log_returns(prices)
 corrmatrix = Vol.ewma(returns, 0.94)
