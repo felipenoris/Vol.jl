@@ -15,6 +15,9 @@ r = [ 1. 2. 3.;
 
 @test issymmetric(Vol.ewma(r, lambda))
 
+# the diagonal of the correlation matrix should be ones.
+@test isapprox(diag(Vol.ewma(r, lambda)), ones(3))
+
 single_serie = [1.0, 3.0, 10.0]
 single_discrete_returns = zeros(2)
 single_discrete_returns[1] = (3.0-1.0)/1.0
@@ -66,7 +69,7 @@ lambda = 0.94
 covmatrix = Vol.ewma_cov(three_returns, lambda)
 vol_array = Vector{Float64}()
 for i in 1:3
-	push!(vol_array, std(three_returns[:, i], corrected=false, mean=0.0))
+	push!(vol_array, Vol.ewma(three_returns[:, i], lambda))
 end
 
 corrmatrix = Vol.ewma(three_returns, lambda)
@@ -80,3 +83,7 @@ end
 @test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
 
 (raw_data, table_header) = readcsv("prices.csv", header=true)
+prices = raw_data[:, 4:end]
+
+returns = Vol.log_returns(prices)
+corrmatrix = Vol.ewma(returns, 0.94)

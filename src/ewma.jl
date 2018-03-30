@@ -78,22 +78,13 @@ The result is the correlation matrix.
 """
 function ewma(returns::Array{Float64, 2}, λ::Float64) :: Array{Float64, 2}
     (rows, cols) = size(returns)
-
-    # vols is the std-dev vector. Each position refers to a column in `returns` matrix.
-    # assumes known zero mean, so it's just the sqrt(sum_squares/n), sum_squares is the sum of the squared returns.
-    vols = zeros(cols)
-    for c in 1:cols
-        v = 0.0
-
-        for r in 1:rows
-            v += returns[r, c]^2
-        end
-        vols[c] = sqrt(v/rows)
-    end
-
     covmatrix = ewma_cov(returns, λ)
     @assert size(covmatrix) == (cols, cols)
 
+    # vols is the Volatility vector
+    # We can get them from the sqrt of the diagonal of the cov matrix
+    vols = sqrt.(diag(covmatrix))
+    
     # turns covmatrix into a correlation matrix
     for j in 1:cols
         for i in 1:j
