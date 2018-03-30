@@ -78,3 +78,5 @@ end
 
 # Diagonal of the covmatrix should be squared volatilities
 @test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
+
+(raw_data, table_header) = readcsv("prices.csv", header=true)
