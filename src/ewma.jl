@@ -82,9 +82,8 @@ function ewma(returns::Array{Float64, 2}, λ::Float64) :: Array{Float64, 2}
     # assumes known zero mean, so it's just the sqrt(sum_squares/n), sum_squares is the sum of the squared returns.
     vols = zeros(cols)
     for c in 1:cols
-
         v = 0.0
-        
+
         for r in 1:rows
             v += returns[r, c]^2
         end
@@ -94,6 +93,7 @@ function ewma(returns::Array{Float64, 2}, λ::Float64) :: Array{Float64, 2}
     covmatrix = ewma_cov(returns, λ)
     @assert size(covmatrix) == (cols, cols)
 
+    # turns covmatrix into a correlation matrix
     for j in 1:cols
         for i in 1:j
             covmatrix[i,j] = covmatrix[i,j] / (vols[i] * vols[j])
