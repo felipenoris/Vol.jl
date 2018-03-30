@@ -87,9 +87,12 @@ end
 lambda = 0.94
 (raw_data, table_header) = readcsv("prices.csv", header=true)
 prices = raw_data[:, 4:end]
+(rows, cols) = size(prices)
 returns = Vol.log_returns(prices)
 covmatrix = Vol.ewma_cov(returns, lambda)
 corrmatrix = Vol.ewma(returns, lambda)
 
 @test issymmetric(covmatrix)
 @test issymmetric(corrmatrix)
+@test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(returns[:,i], lambda) for i in 1:cols ])
+@test isapprox(diag(corrmatrix), ones(cols))
