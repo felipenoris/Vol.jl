@@ -14,3 +14,35 @@ r = [ 1. 2. 3.;
       10. 20. 30.]
 
 @test issymmetric(Vol.ewma(r, lambda))
+
+single_serie = [1.0, 3.0, 10.0]
+single_discrete_returns = zeros(2)
+single_discrete_returns[1] = (3.0-1.0)/1.0
+single_discrete_returns[2] = (10.0-3.0)/3.0
+@test isapprox(Vol.discrete_returns(single_serie), single_discrete_returns)
+
+single_log_returns = zeros(2)
+single_log_returns[1] = log(3.0) - log(1.0)
+single_log_returns[2] = log(10.0) - log(3.0)
+@test isapprox(Vol.log_returns(single_serie), single_log_returns)
+
+two_series = [ 1.0 10.0;
+               3.0 5.0;
+               2.0 15.0]
+
+two_discrete_returns=zeros(2,2)
+two_discrete_returns[1,1] = (3.0-1.0)/1.0
+two_discrete_returns[2,1] = (2.0-3.0)/3.0
+two_discrete_returns[1,2] = (5.0-10.0)/10.0
+two_discrete_returns[2,2] = (15.0-5.0)/5.0
+@test isapprox(Vol.discrete_returns(two_series), two_discrete_returns)
+
+two_log_returns=zeros(2,2)
+two_log_returns[1,1] = log(3.0) - log(1.0)
+two_log_returns[2,1] = log(2.0) - log(3.0)
+two_log_returns[1,2] = log(5.0) - log(10.0)
+two_log_returns[2,2] = log(15.0) - log(5.0)
+@test isapprox(Vol.log_returns(two_series), two_log_returns)
+
+@test isapprox(Vol.discrete_returns(r)[1:end, 1], Vol.discrete_returns(r[1:end, 1]))
+@test isapprox(Vol.log_returns(r)[1:end, 1], Vol.log_returns(r[1:end, 1]))
