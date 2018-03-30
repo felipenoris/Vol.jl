@@ -54,3 +54,27 @@ ewma_canonical_single_return = (0.0 * 1 + (-0.10)*lambda + (-0.02)*(lambda^2) + 
 
 ewma_single_return = sqrt( ((0.0^2) * 1 + ((-0.10)^2)*lambda + ((-0.02)^2)*(lambda^2) + (0.10^2)*(lambda^3) + (0.01^2)*(lambda^4) + (0.05^2)*(lambda^5)) / (1 + lambda + lambda^2 + lambda^3 + lambda^4 + lambda^5))
 @test isapprox(Vol.ewma(single_return, lambda), ewma_single_return)
+
+# tests cov -> correl
+three_returns = [ 0.1 0.3 0.2 ;
+                  0.02 0.03 0.0;
+                  0.3  0.3  0.3;
+                  0.2  0.0  0.1]
+
+lambda = 0.94
+
+covmatrix = Vol.ewma_cov(three_returns, lambda)
+vol_array = Vector{Float64}()
+for i in 1:3
+	push!(vol_array, std(three_returns[:, i], corrected=false, mean=0.0))
+end
+
+corrmatrix = Vol.ewma(three_returns, lambda)
+for i in 1:3
+	for j in 1:3
+		@test isapprox(corrmatrix[i,j], covmatrix[i,j]/(vol_array[i]*vol_array[j]))
+	end
+end
+
+# Diagonal of the covmatrix should be squared volatilities
+@test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
