@@ -1,4 +1,5 @@
 
+__precompile__(true)
 module Vol
 
 include("returns.jl")
