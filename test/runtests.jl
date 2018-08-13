@@ -1,6 +1,7 @@
 
-using Base.Test
+using Test
 import Vol
+import LinearAlgebra, DelimitedFiles
 
 return_series = 0.01 * collect(1:50)
 lambda = 0.94
@@ -13,11 +14,11 @@ r = [ 1. 2. 3.;
       5. 6. 7.;
       10. 20. 30.]
 
-@test issymmetric(Vol.ewma(r, lambda))
-@test issymmetric(Vol.ewma_cov(r, lambda))
+@test LinearAlgebra.issymmetric(Vol.ewma(r, lambda))
+@test LinearAlgebra.issymmetric(Vol.ewma_cov(r, lambda))
 
 # the diagonal of the correlation matrix should be ones.
-@test isapprox(diag(Vol.ewma(r, lambda)), ones(3))
+@test isapprox(LinearAlgebra.diag(Vol.ewma(r, lambda)), ones(3))
 
 single_serie = [1.0, 3.0, 10.0]
 single_discrete_returns = zeros(2)
@@ -70,29 +71,29 @@ lambda = 0.94
 covmatrix = Vol.ewma_cov(three_returns, lambda)
 vol_array = Vector{Float64}()
 for i in 1:3
-	push!(vol_array, Vol.ewma(three_returns[:, i], lambda))
+    push!(vol_array, Vol.ewma(three_returns[:, i], lambda))
 end
 
 corrmatrix = Vol.ewma(three_returns, lambda)
 for i in 1:3
-	for j in 1:3
-		@test isapprox(corrmatrix[i,j], covmatrix[i,j]/(vol_array[i]*vol_array[j]))
-	end
+    for j in 1:3
+        @test isapprox(corrmatrix[i,j], covmatrix[i,j]/(vol_array[i]*vol_array[j]))
+    end
 end
 
 # Diagonal of the covmatrix should be squared volatilities
-@test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
+@test isapprox(sqrt.(LinearAlgebra.diag(covmatrix)), [Vol.ewma(three_returns[:,i], lambda) for i in 1:3 ])
 
 # market prices
 lambda = 0.94
-(raw_data, table_header) = readcsv("prices.csv", header=true)
+(raw_data, table_header) = DelimitedFiles.readdlm("prices.csv", ',', header=true)
 prices = raw_data[:, 4:end]
 (rows, cols) = size(prices)
 returns = Vol.log_returns(prices)
 covmatrix = Vol.ewma_cov(returns, lambda)
 corrmatrix = Vol.ewma(returns, lambda)
 
-@test issymmetric(covmatrix)
-@test issymmetric(corrmatrix)
-@test isapprox(sqrt.(diag(covmatrix)), [Vol.ewma(returns[:,i], lambda) for i in 1:cols ])
-@test isapprox(diag(corrmatrix), ones(cols))
+@test LinearAlgebra.issymmetric(covmatrix)
+@test LinearAlgebra.issymmetric(corrmatrix)
+@test isapprox(sqrt.(LinearAlgebra.diag(covmatrix)), [Vol.ewma(returns[:,i], lambda) for i in 1:cols ])
+@test isapprox(LinearAlgebra.diag(corrmatrix), ones(cols))
